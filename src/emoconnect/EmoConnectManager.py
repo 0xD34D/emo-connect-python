@@ -1,17 +1,17 @@
-# 
+#
 # This file is part of emo-connect-python (https://github.com/0xD34D/emo-connect-python).
 # Copyright (c) 2022 Clark Scheff.
-# 
-# This program is free software: you can redistribute it and/or modify  
-# it under the terms of the GNU General Public License as published by  
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, version 3.
 #
-# This program is distributed in the hope that it will be useful, but 
-# WITHOUT ANY WARRANTY; without even the implied warranty of 
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU 
+# This program is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
 # General Public License for more details.
 #
-# You should have received a copy of the GNU General Public License 
+# You should have received a copy of the GNU General Public License
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 from bleak import (
@@ -23,10 +23,10 @@ from bleak import (
 )
 from typing import (
     Any,
-    Awaitable, 
-    Callable, 
-    Dict, 
-    Optional, 
+    Awaitable,
+    Callable,
+    Dict,
+    Optional,
     Union,
 )
 from emoconnect import EmoConstants
@@ -35,16 +35,18 @@ import logging
 
 logger = logging.getLogger()
 
+
 class EmoConnectManager:
     _client: Optional[BleakClient]
     _emo: Optional[BLEDevice]
     _to_emo_char: Optional[BleakGATTCharacteristic]
     _packet: bytearray
     _packet_size: int
-    _callback: Callable[[Union[None, str]], Union[None, Awaitable[None]]]
+    _is_command: bool
+    _callback: Callable[[Union[None, Any], bool], Union[None, Awaitable[None]]]
 
     def __init__(self, callback: Callable[
-        [Union[None, str]], Union[None, Awaitable[None]]
+        [Union[None, Any], bool], Union[None, Awaitable[None]]
     ]):
         self._client = None
         self._emo = None
@@ -52,20 +54,30 @@ class EmoConnectManager:
 
     async def connectToEmo(self) -> bool:
         async def _handle_rx(_: BleakGATTCharacteristic, data: bytearray):
+            logger.info(f'_handle_rx({data})')
             if data[0] == 0xbb and data[1] == 0xaa:
+                self._is_command = False
                 self._packet_size = int.from_bytes(
                     data[2:4], byteorder='little')
                 self._packet = data[4:len(data)]
-                logger.info(f'New packet of size {self._packet_size} started ')
+                logger.info(
+                    f'New status packet of size {self._packet_size} started ')
+            elif data[0] == 0xdd and data[1] == 0xcc:
+                self._is_command = True
+                self._packet_size = 17
+                self._packet = data[3:len(data)]
+                logger.info(f'New command packet started ')
             elif len(self._packet) < self._packet_size:
                 self._packet += data
 
             if len(self._packet) >= self._packet_size:
-                s = self._packet.decode('utf-8')
+                logger.info(f'Packet completed: {self._packet}')
+                s = self._packet.decode(
+                    'utf-8') if not self._is_command else bytes(self._packet)
                 if inspect.iscoroutinefunction(self._callback):
-                    await self._callback(s)
+                    await self._callback(s, self._is_command)
                 else:
-                    self._callback(s)
+                    self._callback(s, self._is_command)
 
         if self._client is not None and self._client.is_connected:
             raise EmoConnectManagerException(f'Already connected {self._emo}.')

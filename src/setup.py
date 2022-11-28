@@ -6,20 +6,16 @@ with open('../README.md', 'r') as fh:
 setuptools.setup(
     name='emo-connect-python',
     version='0.0.1',
-    scripts=[
-        'emoconnect/EmoConstants.py',
-        'emoconnect/EmoConnectManager.py',
-        'emoconnect/ble/config/RequestConfig.py',
-        'emoconnect/ble/util/BleRequestUtil.py',
-        'emoconnect/util/ByteUtil.py',
-    ],
     author='Clark Scheff',
     author_email='clark@scheffsblend.com',
     description='Python library for connecting and interacting with an EMO pet',
     long_description=long_description,
     long_description_content_type='text/markdown',
     url='https://github.com/0xD34D/emo-connect-python',
-    packages=setuptools.find_packages(),
+    packages=setuptools.find_packages(
+        include=['emoconnect*'],
+        exclude=['examples*'],
+    ),
     install_requires=[
         'bleak',
     ],
