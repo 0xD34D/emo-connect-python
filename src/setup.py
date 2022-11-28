@@ -5,9 +5,10 @@ with open('../README.md', 'r') as fh:
 
 setuptools.setup(
     name='emo-connect-python',
-    version='0.3',
+    version='0.0.1',
     scripts=[
-        'emoconnect/Emo.py',
+        'emoconnect/EmoConstants.py',
+        'emoconnect/EmoConnectManager.py',
         'emoconnect/ble/config/RequestConfig.py',
         'emoconnect/ble/util/BleRequestUtil.py',
         'emoconnect/util/ByteUtil.py',
