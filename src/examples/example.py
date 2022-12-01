@@ -26,6 +26,7 @@ from emoconnect.ble.request import (
     PowerRequest,
     SettingRequest,
     StateRequest,
+    TimezoneSetRequest,
     WifiSettingRequest,
 )
 
@@ -45,6 +46,7 @@ async def main():
     await ecm.connectToEmo()
 
     preferences = await ecm.sendRequest(StateRequest.preference())
+    preferences = preferences['data']['preference']
     print(preferences)
 
     # Enter settings mode
@@ -57,6 +59,11 @@ async def main():
 
     # Uncomment to set EMO's location
     # await sendRequest(ecm, CitySetRequest.setLocation(name="Somewhere"))
+
+    # Uncomment to set EMO's timezone
+    # timezone = await ecm.sendRequest(StateRequest.timezone())
+    # await sendRequest(ecm, TimezoneSetRequest.setTimezone('Nowhere/End_of_Time',
+    #                                                       offset=timezone['data']['timezone']['offset']))
 
     await sendRequest(ecm, SettingRequest.setAutoUpdate(True))
     await sendRequest(ecm, SettingRequest.setAutoUpdate(False))
@@ -74,7 +81,6 @@ async def main():
     await sendRequest(ecm, SettingRequest.setVolumeHigh())
 
     # return settings to what they were before we messed it all up
-    preferences = preferences['data']['preference']
     await sendRequest(ecm, SettingRequest.setAutoUpdate(preferences['auto_update'] == 1))
     await sendRequest(ecm, SettingRequest.setSchedule(preferences['schedule'] == 1))
     await sendRequest(ecm, SettingRequest.setScheduleSound(preferences['schedule_sound'] == 1))
