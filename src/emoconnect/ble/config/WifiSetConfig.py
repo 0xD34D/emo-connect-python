@@ -16,13 +16,14 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 from dataclasses import dataclass
+import json
+
 from emoconnect import EmoConstants
 from emoconnect.ble.config.BaseConfig import BaseConfig
-import json
 
 
 @dataclass
-class WifiSettingConfig(BaseConfig):
+class WifiSetConfig(BaseConfig):
     ssid: str
     password: str
 

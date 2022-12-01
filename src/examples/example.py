@@ -27,7 +27,7 @@ from emoconnect.ble.request import (
     SettingRequest,
     StateRequest,
     TimezoneSetRequest,
-    WifiSettingRequest,
+    WifiSetRequest,
 )
 
 logging.basicConfig(format='[EMO] %(asctime)s %(levelname)s %(message)s')
@@ -45,16 +45,16 @@ async def main():
     ecm = EmoConnectManager()
     await ecm.connectToEmo()
 
-    preferences = await ecm.sendRequest(StateRequest.preference())
-    preferences = preferences['data']['preference']
-    print(preferences)
+    state = await ecm.sendRequest(StateRequest.everything())
+    preference = state['data']['preference']
+    print(preference)
 
     # Enter settings mode
     await sendRequest(ecm, SettingRequest.enterSettingMode())
 
     # the below code will indeed set the wifi setting so feel
     # free to uncomment and play with it ;)
-    # await sendRequest(ecm, WifiSettingRequest.setWifi('Groot', 'I_am_groot!'))
+    # await sendRequest(ecm, WifiSetRequest.setWifi('Groot', 'I_am_groot!'))
     # await sendRequest(ecm, StateRequest.network())
 
     # Uncomment to set EMO's location
@@ -81,12 +81,12 @@ async def main():
     await sendRequest(ecm, SettingRequest.setVolumeHigh())
 
     # return settings to what they were before we messed it all up
-    await sendRequest(ecm, SettingRequest.setAutoUpdate(preferences['auto_update'] == 1))
-    await sendRequest(ecm, SettingRequest.setSchedule(preferences['schedule'] == 1))
-    await sendRequest(ecm, SettingRequest.setScheduleSound(preferences['schedule_sound'] == 1))
-    await sendRequest(ecm, SettingRequest.setLength(preferences['length'] == 0))
-    await sendRequest(ecm, SettingRequest.setTemp(preferences['temperature'] == 0))
-    volume = preferences['volume']
+    await sendRequest(ecm, SettingRequest.setAutoUpdate(preference['auto_update'] == 1))
+    await sendRequest(ecm, SettingRequest.setSchedule(preference['schedule'] == 1))
+    await sendRequest(ecm, SettingRequest.setScheduleSound(preference['schedule_sound'] == 1))
+    await sendRequest(ecm, SettingRequest.setLength(preference['length'] == 0))
+    await sendRequest(ecm, SettingRequest.setTemp(preference['temperature'] == 0))
+    volume = preference['volume']
     if volume == 3:
         await sendRequest(ecm, SettingRequest.setVolumeHigh())
     elif volume == 2:

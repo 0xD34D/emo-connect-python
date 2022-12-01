@@ -14,7 +14,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
-from emoconnect.ble.config.WifiSettingConfig import WifiSettingConfig
+from emoconnect.ble.config.WifiSetConfig import WifiSetConfig
 
 
 def setWifi(ssid: str, password: str) -> bytes:
@@ -22,6 +22,6 @@ def setWifi(ssid: str, password: str) -> bytes:
 
 
 def _request(ssid: str, password: str) -> bytes:
-    config: WifiSettingConfig = WifiSettingConfig(
+    config: WifiSetConfig = WifiSetConfig(
         ssid=ssid, password=password)
     return config.getRequest()
