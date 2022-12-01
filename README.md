@@ -8,10 +8,11 @@ pip install src/ --user
 ## Example
 ```python
 import asyncio
-from emoconnect import EmoConstants
-from emoconnect.EmoConnectManager import EmoConnectManager
-from emoconnect.ble.util import BleRequestUtil
+import json
 import logging
+
+from emoconnect.EmoConnectManager import EmoConnectManager
+from emoconnect.ble.request import StateRequest
 
 logging.basicConfig(format='[EMO] %(asctime)s %(levelname)s %(message)s')
 logger = logging.getLogger()
@@ -20,16 +21,13 @@ logger.setLevel(logging.INFO)
 
 
 async def main():
-    async def _handle_rx(data: str):
-        print(f'received: {data}')
+    ecm = EmoConnectManager()
+    await ecm.connectToEmo()
 
-    emc = EmoConnectManager(_handle_rx)
-    await emc.connectToEmo()
+    state = await ecm.sendRequest(StateRequest.everything())
+    print(state)
 
-    await emc.sendRequest(BleRequestUtil.deviceid())
-    await asyncio.sleep(0.5)
-
-    await emc.disconnect()
+    await ecm.disconnect()
 
 asyncio.run(main())
 ```

@@ -20,7 +20,7 @@
    "type":"sta_rsp",
    "data":{
       "device":{
-         "device_id":"b8d61aaad34d"
+         "device_id":"b8d6d34df162"
       }
    }
 }
@@ -363,6 +363,126 @@
          "length":1,
          "auto_update":0,
          "schedule_sound":1,
+         "schedule":1
+      }
+   }
+}
+```
+## get_everything
+### request:
+```json
+{
+   "data":{
+      "request": [0,1,2,3,4,5,6,7,8,9,10,11,12]
+   },
+   "type":"sta_req"
+}
+```
+### response:
+```json
+{
+   "type":"sta_rsp",
+   "data":{
+      "device":{
+         "device_id":"b8d6d34df162"
+      },
+      "version":{
+         "number":24,
+         "name":"1.7.0"
+      },
+      "network":{
+         "connected":0,
+         "name":""
+      },
+      "xiaoai":{
+         "connected":0
+      },
+      "alexa":{
+         "connected":0
+      },
+      "light":{
+         "state":[
+            
+         ]
+      },
+      "alarm":{
+         "state":[
+            {
+               "index":1,
+               "on":0,
+               "time":"20:00",
+               "recurrence":"ONCE",
+               "tag":"alarm"
+            },
+            {
+               "index":2,
+               "on":0,
+               "time":"22:00",
+               "recurrence":"ONCE",
+               "tag":"alarm"
+            },
+            {
+               "index":3,
+               "on":0,
+               "time":"07:00",
+               "recurrence":"ONCE",
+               "tag":"alarm"
+            }
+         ]
+      },
+      "city":{
+         "id":0,
+         "name":"Portland",
+         "state":"OR",
+         "country":"US",
+         "coord":{
+            "lon":-122.6784,
+            "lat":45.5152
+         }
+      },
+      "timezone":{
+         "name":"America/Los_Angeles",
+         "code":"",
+         "offset":-25200
+      },
+      "achievements":{
+         "unlocked":[
+            3,
+            4,
+            5,
+            6,
+            8,
+            15,
+            24
+         ]
+      },
+      "dances":{
+         "joris_unlocked":[
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8
+         ]
+      },
+      "personality":{
+         "name":"EMO",
+         "age":163,
+         "birthday":"6.18.",
+         "color":"orange",
+         "lucky_number":1,
+         "sign":"geminai",
+         "number":"f162"
+      },
+      "preference":{
+         "volume":1,
+         "temperature":1,
+         "length":1,
+         "auto_update":0,
+         "schedule_sound":0,
          "schedule":1
       }
    }
