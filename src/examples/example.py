@@ -19,8 +19,10 @@ import json
 import logging
 
 from emoconnect.EmoConnectManager import EmoConnectManager
+# pylint: disable=unused-import
 from emoconnect.ble.request import (
     AnimationRequest,
+    CitySetRequest,
     PowerRequest,
     SettingRequest,
     StateRequest,
@@ -52,7 +54,10 @@ async def main():
     # free to uncomment and play with it ;)
     # await sendRequest(ecm, WifiSettingRequest.setWifi('Groot', 'I_am_groot!'))
     # await sendRequest(ecm, StateRequest.network())
-    
+
+    # Uncomment to set EMO's location
+    # await sendRequest(ecm, CitySetRequest.setLocation(name="Somewhere"))
+
     await sendRequest(ecm, SettingRequest.setAutoUpdate(True))
     await sendRequest(ecm, SettingRequest.setAutoUpdate(False))
     await sendRequest(ecm, SettingRequest.setSchedule(True))
