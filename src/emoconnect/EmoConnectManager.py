@@ -23,6 +23,7 @@ from typing import (
 import asyncio
 import json
 import logging
+from enum import IntEnum
 from bleak import (
     AdvertisementData,
     BleakClient,
@@ -39,12 +40,18 @@ class EmoConnectManagerException(Exception):
     ...
 
 
+class PacketType(IntEnum):
+    Response = 0
+    Command = 1
+
+
 class EmoConnectManager:
     _client: Optional[BleakClient]
     _emo: Optional[BLEDevice]
     _to_emo_char: Optional[BleakGATTCharacteristic]
     _packet: bytearray
     _packet_size: int
+    _packet_type: PacketType
     _sending_request: bool
     _resonse: Optional[Dict[str, Any]]
 
@@ -60,14 +67,23 @@ class EmoConnectManager:
                 self._packet_size = int.from_bytes(
                     data[2:4], byteorder='little')
                 self._packet = data[4:len(data)]
+                self._packet_type = PacketType.Response
                 logger.debug(
                     f'New packet of size {self._packet_size} started ')
+            elif data[0] == 0xdd and data[1] == 0xcc:
+                self._packet_size = 17
+                self._packet = data[3:len(data)]
+                self._packet_type = PacketType.Command
+                logger.debug('New command packet started')
             elif len(self._packet) < self._packet_size:
                 self._packet += data
 
             if len(self._packet) >= self._packet_size:
-                s = self._packet.decode('utf-8')
-                self._resonse = json.loads(s)
+                if self._packet_type == PacketType.Response:
+                    s = self._packet.decode('utf-8')
+                    self._resonse = json.loads(s)
+                else:
+                    logger.info(f'received command packet: {self._packet}')
 
         if self._client is not None and self._client.is_connected:
             raise EmoConnectManagerException(f'Already connected {self._emo}.')
@@ -116,3 +132,13 @@ class EmoConnectManager:
 
         logger.info(f'emo->client: {self._resonse}')
         return self._resonse
+
+    async def sendCommand(self,
+                          command: Union[bytes, bytearray]):
+        if self._client is None or not self._client.is_connected:
+            raise EmoConnectManagerException(
+                'Cannot send command, EMO is not connected')
+
+        logger.info(f'client->emo: {command}')
+
+        await self._client.write_gatt_char(self._to_emo_char, command)

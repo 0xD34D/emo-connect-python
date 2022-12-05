@@ -99,11 +99,11 @@ async def main():
     # exit settings mode
     await sendRequest(ecm, SettingRequest.exitSettingMode())
 
-    await sendRequest(ecm, AnimationRequest.enterAnimationMode())
-    for i in range(0, len(AnimationRequest.DANCE_LIST)):
-        await sendRequest(ecm, AnimationRequest.playEmoDance(i))
-        await asyncio.sleep(5)
-    await sendRequest(ecm, AnimationRequest.exitAnimationMode())
+    # await sendRequest(ecm, AnimationRequest.enterAnimationMode())
+    # for i in range(0, len(AnimationRequest.DANCE_LIST)):
+    #     await sendRequest(ecm, AnimationRequest.playEmoDance(i))
+    #     await asyncio.sleep(5)
+    # await sendRequest(ecm, AnimationRequest.exitAnimationMode())
 
     await sendRequest(ecm, PowerRequest.powerOff())
     await ecm.disconnect()
