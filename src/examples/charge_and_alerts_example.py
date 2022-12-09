@@ -47,8 +47,8 @@ async def main():
     signal.signal(signal.SIGINT, handler)
 
     ecm.setCommandCallback(commandRx)
-    await ecm.sendCommand(CommandUtil.statusOnOff(True))
     await ecm.sendCommand(CommandUtil.chargeLevelOnOff(True))
+    await ecm.sendCommand(CommandUtil.statusOnOff(True))
     running = True
     print('Running...  Use Ctrl-C to exit')
     while running:

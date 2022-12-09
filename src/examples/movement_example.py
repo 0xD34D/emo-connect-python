@@ -17,6 +17,7 @@
 import asyncio
 import logging
 import signal
+from typing import Any
 from inputs import get_gamepad
 from emoconnect.EmoConnectManager import EmoConnectManager
 from emoconnect.ble.command import CommandUtil
@@ -30,6 +31,10 @@ logger.setLevel(logging.INFO)
 running: bool = False
 
 
+async def commandRx(command: Any):
+    print(f'Received command: {command}')
+
+
 async def main():
     global running
     ecm = EmoConnectManager()
@@ -41,6 +46,8 @@ async def main():
         running = False
         print('\nCtrl-C received, shutting down...\n')
     signal.signal(signal.SIGINT, handler)
+
+    ecm.setCommandCallback(commandRx)
 
     await ecm.sendCommand(CommandUtil.clear())
     await asyncio.sleep(0.5)

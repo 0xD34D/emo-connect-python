@@ -13,18 +13,10 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
-from emoconnect.ble.command.ChargeStatus import ChargeStatus
-from emoconnect.ble.command.HuntResponse import HuntResponse
-from emoconnect.ble.command.StatusAlert import Status, StatusAlert
+from dataclasses import dataclass
 
 
-class CommandParser:
-    def parse(self, payload: bytes):
-        if payload[0] == 2 and payload[1] == 0:
-            return ChargeStatus(int(payload[2]))
-        elif payload[0] == 0 and payload[1] == 0:
-            return StatusAlert(Status(int(f'{payload[2]}{payload[3]}')))
-        elif payload[0] == 3 and payload[1] == 5:
-            return HuntResponse(status=int(payload[2]), sub_status=int(payload[3]))
-        else:
-            return None
+@dataclass
+class HuntResponse:
+    status: int
+    sub_status: int
