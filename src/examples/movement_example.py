@@ -16,9 +16,8 @@
 #
 import asyncio
 import logging
-import signal
 from typing import Any
-from inputs import get_gamepad
+import inputs
 from emoconnect.EmoConnectManager import EmoConnectManager
 from emoconnect.ble.command import CommandUtil
 from emoconnect.ble.request import StateRequest
@@ -28,7 +27,20 @@ logger = logging.getLogger()
 # can be changed to logging.DEBUG for debugging issues
 logger.setLevel(logging.INFO)
 
-running: bool = False
+
+def getKeyboard():
+    keyboard = None
+    keyboards = inputs.devices.keyboards
+    num_keyboards = len(keyboards)
+    if num_keyboards == 1:
+        keyboard = keyboards[0]
+    elif num_keyboards > 1:
+        print('More than one keyboard detected, please choose one to use:')
+        for i in range(num_keyboards):
+            print(f'{i}) {keyboards[i].name}')
+        choice = input('\nChoice (0=default): ')
+        keyboard = keyboards[int(choice)]
+    return keyboard
 
 
 async def commandRx(command: Any):
@@ -36,18 +48,15 @@ async def commandRx(command: Any):
 
 
 async def main():
-    global running
+    running = False
+    keyboard = getKeyboard()
+
     ecm = EmoConnectManager()
     await ecm.connectToEmo()
     state = await ecm.sendRequest(StateRequest.everything())
 
-    def handler(signum, frame):
-        global running
-        running = False
-        print('\nCtrl-C received, shutting down...\n')
-    signal.signal(signal.SIGINT, handler)
-
     ecm.setCommandCallback(commandRx)
+    print('stop')
 
     await ecm.sendCommand(CommandUtil.clear())
     await asyncio.sleep(0.5)
@@ -60,25 +69,34 @@ async def main():
     await ecm.sendCommand(CommandUtil.statusOnOff(True))
     await ecm.sendCommand(CommandUtil.chargeLevelOnOff(True))
     running = True
-    print('Running...  Use Ctrl-C to exit')
+    print('Running...  Press Escape to quit')
     while running:
-        events = get_gamepad()
+        events = keyboard.read()
         for event in events:
-            if event.code == 'ABS_HAT0Y':
-                if event.state == -1:
+            if event.code == 'KEY_UP':
+                if event.state == 1:
                     await ecm.sendCommand(CommandUtil.forward())
-                elif event.state == 1:
+                elif event.state == 0:
+                    await ecm.sendCommand(CommandUtil.stop())
+            if event.code == 'KEY_DOWN':
+                if event.state == 1:
                     await ecm.sendCommand(CommandUtil.back())
-                else:
+                elif event.state == 0:
                     await ecm.sendCommand(CommandUtil.stop())
-            if event.code == 'ABS_HAT0X':
-                if event.state == -1:
+            if event.code == 'KEY_LEFT':
+                if event.state == 1:
                     await ecm.sendCommand(CommandUtil.left())
-                elif event.state == 1:
-                    await ecm.sendCommand(CommandUtil.right())
-                else:
+                elif event.state == 0:
                     await ecm.sendCommand(CommandUtil.stop())
-        await asyncio.sleep(0.1)
+            if event.code == 'KEY_RIGHT':
+                if event.state == 1:
+                    await ecm.sendCommand(CommandUtil.right())
+                elif event.state == 0:
+                    await ecm.sendCommand(CommandUtil.stop())
+            if event.code == 'KEY_ESC':
+                running = False
+
+        await asyncio.sleep(0.01)
 
     await ecm.sendCommand(CommandUtil.stop())
     await ecm.sendCommand(CommandUtil.exitApp())
