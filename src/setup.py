@@ -18,6 +18,7 @@ setup(
     url='https://github.com/0xD34D/emo-connect-python',
     install_requires=[
         'bleak',
+        'bleak-retry-connector',
     ],
     classifiers=[
         'Programming Language :: Python :: 3',

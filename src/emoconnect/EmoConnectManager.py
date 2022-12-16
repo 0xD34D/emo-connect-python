@@ -34,6 +34,7 @@ from bleak import (
     BleakScanner,
     BLEDevice,
 )
+from bleak_retry_connector import BleakClientWithServiceCache, establish_connection
 from emoconnect import EmoConstants
 from emoconnect.ble.command.CommandParser import CommandParser
 
@@ -116,8 +117,7 @@ class EmoConnectManager:
 
         self._emo = await BleakScanner.find_device_by_filter(match_write_uuid)
         if self._emo is not None:
-            self._client = BleakClient(self._emo)
-            await self._client.connect()
+            self._client = await establish_connection(BleakClientWithServiceCache, self._emo, "EMO")
             await self._client.start_notify(EmoConstants.NOTIFY_UUID,
                                             _handle_rx)
             emo_service = self._client.services.get_service(
