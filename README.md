@@ -3,7 +3,7 @@ Python library for connecting and interacting with an EMO pet
 
 ## Usage
 ```bash
-pip install src/ --user
+pip install emo-connect-python
 ```
 ## Example
 ```python

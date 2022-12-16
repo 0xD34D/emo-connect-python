@@ -1,14 +1,15 @@
 from setuptools import find_packages, setup
+from pathlib import Path
 
-with open('../README.md', 'r', encoding='utf-8') as fh:
-    long_description = fh.read()
+this_directory = Path(__file__).parent
+long_description = (this_directory / "README.md").read_text()
 
 setup(
     name='emo-connect-python',
-    version='0.1.0',
+    version='0.1.1',
     packages=find_packages(
-        include=['emoconnect*'],
-        exclude=['examples*', 'tests*'],
+        include=['src/emoconnect*'],
+        exclude=['src/examples*', 'src/tests*'],
     ),
     author='Clark Scheff',
     author_email='clark@scheffsblend.com',
@@ -22,7 +23,7 @@ setup(
     ],
     classifiers=[
         'Programming Language :: Python :: 3',
-        'License :: OSI Approved :: GPLv3',
+        'License :: OSI Approved :: GNU General Public License v3 (GPLv3)',
         'Operating System :: OS Independent',
     ],
 )
