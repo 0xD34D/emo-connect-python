@@ -6,10 +6,10 @@ long_description = (this_directory / "README.md").read_text()
 
 setup(
     name='emo-connect-python',
-    version='0.1.1',
+    version='0.1.2',
     packages=find_packages(
-        include=['src/emoconnect*'],
-        exclude=['src/examples*', 'src/tests*'],
+        include=['emoconnect*'],
+        exclude=['examples*', 'tests*'],
     ),
     author='Clark Scheff',
     author_email='clark@scheffsblend.com',
