@@ -23,6 +23,7 @@ from emoconnect.EmoConnectManager import EmoConnectManager
 from emoconnect.ble.request import (
     AnimationRequest,
     CitySetRequest,
+    OtaRequest,
     PowerRequest,
     SettingRequest,
     StateRequest,
@@ -104,6 +105,9 @@ async def main():
     #     await sendRequest(ecm, AnimationRequest.playEmoDance(i))
     #     await asyncio.sleep(5)
     # await sendRequest(ecm, AnimationRequest.exitAnimationMode())
+
+    # Force emo to reboot and check for an update to apply
+    # await sendRequest(ecm, OtaRequest.setVersion(999))
 
     await sendRequest(ecm, PowerRequest.powerOff())
     await ecm.disconnect()
