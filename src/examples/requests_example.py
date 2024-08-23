@@ -30,6 +30,7 @@ from emoconnect.ble.request import (
     TimezoneSetRequest,
     WifiSetRequest,
 )
+from emoconnect.ble.command import CommandUtil
 
 logging.basicConfig(format='[EMO] %(asctime)s %(levelname)s %(message)s')
 logger = logging.getLogger()
@@ -42,6 +43,38 @@ async def sendRequest(ecm: EmoConnectManager, request: bytes):
     print(f'{json.dumps(response, indent=4)}')
 
 
+async def debugCommands(ecm: EmoConnectManager):
+    await ecm.sendCommand(CommandUtil.debugEnterTestMode())
+    input("Press enter to proceed to next test...")
+
+    # mic array test
+    await ecm.sendCommand(CommandUtil.debugMicArrayTest())
+    input("Press enter to proceed to next test...")
+
+    # camera test
+    await ecm.sendCommand(CommandUtil.debugCameraTest())
+    input("Press enter to proceed to next test...")
+
+    # ???? test
+    await ecm.sendCommand(CommandUtil.debugDistanceSensorTest())
+    input("Press enter to proceed to next test...")
+
+    # cliff sensor test
+    await ecm.sendCommand(CommandUtil.debugCliffSensorTest())
+    input("Press enter to proceed to next test...")
+
+    # touch sensor test
+    await ecm.sendCommand(CommandUtil.debugTouchSensorsTest())
+    input("Press enter to proceed to next test...")
+
+    # imu test
+    await ecm.sendCommand(CommandUtil.debugImuAndCompassTest())
+    input("Press enter to proceed to next test...")
+
+    # exit test
+    await ecm.sendCommand(CommandUtil.debugExitTestMode())
+
+
 async def main():
     ecm = EmoConnectManager()
     await ecm.connectToEmo()
@@ -49,6 +82,9 @@ async def main():
     state = await ecm.sendRequest(StateRequest.everything())
     preference = state['data']['preference']
     print(preference)
+
+    # start debug tests
+    await debugCommands(ecm)
 
     # Enter settings mode
     await sendRequest(ecm, SettingRequest.enterSettingMode())

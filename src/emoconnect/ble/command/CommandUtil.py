@@ -32,6 +32,13 @@ def cmd(data: list[int], sequential: bool = True) -> bytes:
     return payload
 
 
+def cmd_debug(command: int) -> bytes:
+    global SEQ
+    payload = bytes([0x55, 0xAA, 0x55, 0xAA, 0x33, (command & 0xFF)]) + \
+        bytes([0])*13 + bytes([0xED])
+    return payload
+
+
 def clear() -> bytes:
     return cmd([])
 
@@ -82,3 +89,39 @@ def resetting() -> bytes:
 
 def timeout() -> bytes:
     return cmd([3, 5, 8], sequential=False)
+
+
+def debugEnterTestMode() -> bytes:
+    return cmd_debug(19)
+
+
+def debugMicArrayTest() -> bytes:
+    return cmd_debug(20)
+
+
+def debugCameraTest() -> bytes:
+    return cmd_debug(21)
+
+
+def debugDistanceSensorTest() -> bytes:
+    return cmd_debug(22)
+
+
+def debugCliffSensorTest() -> bytes:
+    return cmd_debug(23)
+
+
+def debugTouchSensorsTest() -> bytes:
+    return cmd_debug(24)
+
+
+def debugImuAndCompassTest() -> bytes:
+    return cmd_debug(25)
+
+
+def debugExitTestMode() -> bytes:
+    return cmd_debug(26)
+
+
+def debug_cmd_27() -> bytes:
+    return cmd_debug(27)

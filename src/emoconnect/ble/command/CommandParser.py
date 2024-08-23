@@ -23,7 +23,12 @@ class CommandParser:
         if payload[0] == 2 and payload[1] == 0:
             return ChargeStatus(int(payload[2]))
         elif payload[0] == 0 and payload[1] == 0:
-            return StatusAlert(Status(int(f'{payload[2]}{payload[3]}')))
+            status_value = int(f'{payload[2]}{payload[3]}')
+            try:
+                status = Status(status_value)
+                return StatusAlert(status)
+            except ValueError:
+                return f"rcvd unknown status: {status_value}"
         elif payload[0] == 3 and payload[1] == 5:
             return HuntResponse(status=int(payload[2]), sub_status=int(payload[3]))
         else:
